@@ -16,15 +16,15 @@ final class RMCharactersListViewModel : NSObject {
     weak public var delegate : RMCharactersListViewModelDelegate?
     private var characters : [RMCharacter] = [] {
         didSet {
-          
+            
             for character in characters {
                 let viewmodel = RMCharactersCollectionViewCellViewModel(charactername: character.name, characterStatusText: character.status, characterimageurl: URL(string: character.image))
                 if !cellsviewmodel.contains(viewmodel){
                     cellsviewmodel.append(viewmodel)
                 }
-               
+                
             }
-          
+            
         }
     }
     
@@ -58,9 +58,9 @@ final class RMCharactersListViewModel : NSObject {
         guard !isloadingmore else {
             return
         }
-       
-         isloadingmore = true
-      
+        
+        isloadingmore = true
+        
         guard let request = RMRequest(url: url) else {
             isloadingmore = false
             print("failed to fln")
@@ -68,30 +68,30 @@ final class RMCharactersListViewModel : NSObject {
         }
         RMService.shared.execute(request, expecting: RMGetAllCharactersResponse.self) {[weak self] result in
             switch result {
-           case .success(let responsemodel):
+            case .success(let responsemodel):
                 let Moreresults = responsemodel.results
                 let info = responsemodel.info
                 self?.responseinfo = info
                 
                 let originalCount = self?.characters.count
-            
+                
                 let newcount = Moreresults.count
                 
                 let total = (originalCount ?? 0) + newcount
-               
-                let startingindex = total - newcount 
-               
+                
+                let startingindex = total - newcount
+                
                 let indexpathstoadd : [IndexPath] = Array(startingindex..<(startingindex + newcount)).compactMap({
                     return IndexPath(row: $0, section: 0)
                 })
-              
+                
                 self?.characters.append(contentsOf: Moreresults)
                 DispatchQueue.main.async {
                     self?.delegate?.didloadmorecharacter(with:indexpathstoadd)
                     self?.isloadingmore = false
                 }
-               
-           case .failure(let failure):
+                
+            case .failure(let failure):
                 print(String(describing: failure))
                 self?.isloadingmore = false
             }
@@ -109,16 +109,16 @@ extension RMCharactersListViewModel :  UICollectionViewDataSource,UICollectionVi
             fatalError("olmadı bu cell ")
         }
         if indexPath.row < cellsviewmodel.count {
-                let viewModel = cellsviewmodel[indexPath.row]
-                cell.configure(with: viewModel)
-            }
+            let viewModel = cellsviewmodel[indexPath.row]
+            cell.configure(with: viewModel)
+        }
         
         
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionFooter else {
-             fatalError("error124555")
+            fatalError("error124555")
         }
         guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: RMFooterLoadingCollectionReusableView.identifier, for: indexPath) as? RMFooterLoadingCollectionReusableView else {
             fatalError("error")
@@ -146,7 +146,7 @@ extension RMCharactersListViewModel :  UICollectionViewDataSource,UICollectionVi
         let character = characters[indexPath.row]
         delegate?.didselectcharacters(character)
     }
-   
+    
 }
 extension RMCharactersListViewModel : UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

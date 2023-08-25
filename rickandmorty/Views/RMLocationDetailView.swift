@@ -1,17 +1,17 @@
 //
-//  RMEpisodeDetailView.swift
+//  RMLocationDetailView.swift
 //  rickandmorty
 //
-//  Created by Ahmet Samsun on 10.07.2023.
+//  Created by Ahmet Samsun on 25.08.2023.
 //
 
 import UIKit
-protocol RMEpisodeDetailViewDelegate : AnyObject {
-    func rmEpisodeDetailView(_ detailview: RMEpisodeDetailView , didSelect character : RMCharacter )
+protocol RMLocationDetailViewDelegate : AnyObject {
+    func RMLocationDetailView(_ detailview: RMLocationDetailView , didSelect character : RMCharacter )
 }
-class RMEpisodeDetailView: UIView {
+class RMLocationDetailView: UIView {
     
-    public weak var delegate : RMEpisodeDetailViewDelegate?
+    public weak var delegate : RMLocationDetailViewDelegate?
     
     private var collectionView : UICollectionView!
     private let spinnder : UIActivityIndicatorView = {
@@ -20,7 +20,7 @@ class RMEpisodeDetailView: UIView {
         spinner.hidesWhenStopped = true
         return spinner
     }()
-    private var viewModel : RMEpisodeDetailViewViewModel? {
+    private var viewModel : RMLocationDetailViewViewModel? {
         didSet {
             spinnder.stopAnimating()
             self.collectionView.reloadData()
@@ -84,11 +84,11 @@ class RMEpisodeDetailView: UIView {
         collectionView.register(RMCharactersCollectionViewCell.self, forCellWithReuseIdentifier: RMCharactersCollectionViewCell.celldenifier)
         return collectionView
     }
-    public func configure(with viewModel : RMEpisodeDetailViewViewModel){
+    public func configure(with viewModel : RMLocationDetailViewViewModel){
         self.viewModel = viewModel
     }
 }
-extension RMEpisodeDetailView : UICollectionViewDelegate,UICollectionViewDataSource {
+extension RMLocationDetailView : UICollectionViewDelegate,UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return viewModel?.sections.count ?? 0
     }
@@ -144,14 +144,14 @@ extension RMEpisodeDetailView : UICollectionViewDelegate,UICollectionViewDataSou
             break
         case .characters:
             guard  let character = viewModel.character(at : indexPath.row) else {
-                return  
+                return
             }
-            delegate?.rmEpisodeDetailView(self, didSelect: character)
+            delegate?.RMLocationDetailView(self, didSelect: character)
         }
         
     }
 }
-extension RMEpisodeDetailView {
+extension RMLocationDetailView {
     func layout(for section : Int) -> NSCollectionLayoutSection {
         guard let sections = viewModel?.sections else {
             return createinfolayout()

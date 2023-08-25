@@ -16,10 +16,10 @@ final class RMCharactersCollectionViewCellViewModel : Hashable,Equatable {
         hasher.combine(characterimageurl)
     }
     
-public let charactername : String
-private let characterStatusText: RMCharacterStatus
-private let characterimageurl : URL?
-init(
+    public let charactername : String
+    private let characterStatusText: RMCharacterStatus
+    private let characterimageurl : URL?
+    init(
         charactername : String,
         characterStatusText: RMCharacterStatus,
         characterimageurl : URL?

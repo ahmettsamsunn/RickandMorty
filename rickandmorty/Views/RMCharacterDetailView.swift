@@ -9,7 +9,7 @@ import UIKit
 
 class RMCharacterDetailView: UIView {
     private var viewModel : RMCharacterDetailViewViewModel
-  public var collectionView : UICollectionView?
+    public var collectionView : UICollectionView?
     private let spinner : UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView (style: .large)
         spinner.hidesWhenStopped = true
@@ -18,10 +18,10 @@ class RMCharacterDetailView: UIView {
     }()
     
     
-init(frame: CGRect,viewModel : RMCharacterDetailViewViewModel) {
-    self.viewModel = viewModel
+    init(frame: CGRect,viewModel : RMCharacterDetailViewViewModel) {
+        self.viewModel = viewModel
         super.init(frame: frame)
-    backgroundColor = .secondarySystemBackground
+        backgroundColor = .secondarySystemBackground
         translatesAutoresizingMaskIntoConstraints = false
         let collectionview = createCollectionView()
         self.collectionView = collectionview
@@ -63,12 +63,12 @@ init(frame: CGRect,viewModel : RMCharacterDetailViewViewModel) {
         return collectionview
     }
     /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
+     // Only override draw() if you perform custom drawing.
+     // An empty implementation adversely affects performance during animation.
+     override func draw(_ rect: CGRect) {
+     // Drawing code
+     }
+     */
     private func createSection(for sectionindex : Int) -> NSCollectionLayoutSection{
         let sectionTypes = viewModel.section
         switch sectionTypes[sectionindex] {
@@ -78,12 +78,12 @@ init(frame: CGRect,viewModel : RMCharacterDetailViewViewModel) {
             return  viewModel.CreateInformationSectionLayout()
         case .episodes:
             return  viewModel.CreateEpisodesSectionLayout()
-        
+            
             
         }
         
-      
+        
         
     }
-
+    
 }

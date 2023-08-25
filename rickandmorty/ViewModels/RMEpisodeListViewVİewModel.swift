@@ -17,15 +17,15 @@ final class RMEpisodeListViewViewModel : NSObject {
     weak public var delegate : RMEpisodeListViewViewModelDelegate?
     private var episodes : [RMEpisode] = [] {
         didSet {
-          
+            
             for episode in episodes{
                 let viewmodel = RMCharacterEpisodeCollectionViewCellViewModel(episodeDataUrl: URL(string: episode.url))
                 if !cellsviewmodel.contains(viewmodel){
                     cellsviewmodel.append(viewmodel)
                 }
-               
+                
             }
-          
+            
         }
     }
     
@@ -59,9 +59,9 @@ final class RMEpisodeListViewViewModel : NSObject {
         guard !isloadingmore else {
             return
         }
-       
-         isloadingmore = true
-      
+        
+        isloadingmore = true
+        
         guard let request = RMRequest(url: url) else {
             isloadingmore = false
             print("failed to fln")
@@ -69,30 +69,30 @@ final class RMEpisodeListViewViewModel : NSObject {
         }
         RMService.shared.execute(request, expecting: RMGetAllEpisodesResponse.self) {[weak self] result in
             switch result {
-           case .success(let responsemodel):
+            case .success(let responsemodel):
                 let Moreresults = responsemodel.results
                 let info = responsemodel.info
                 self?.responseinfo = info
                 
                 let originalCount = self?.episodes.count
-            
+                
                 let newcount = Moreresults.count
                 
                 let total = (originalCount ?? 0) + newcount
-               
+                
                 let startingindex = total - newcount
-               
+                
                 let indexpathstoadd : [IndexPath] = Array(startingindex..<(startingindex + newcount)).compactMap({
                     return IndexPath(row: $0, section: 0)
                 })
-              
+                
                 self?.episodes.append(contentsOf: Moreresults)
                 DispatchQueue.main.async {
                     self?.delegate?.didloadmoreepisodes(with:indexpathstoadd)
                     self?.isloadingmore = false
                 }
-               
-           case .failure(let failure):
+                
+            case .failure(let failure):
                 print(String(describing: failure))
                 self?.isloadingmore = false
             }
@@ -110,16 +110,16 @@ extension RMEpisodeListViewViewModel :  UICollectionViewDataSource,UICollectionV
             fatalError("olmadı bu cell ")
         }
         if indexPath.row < cellsviewmodel.count {
-                let viewModel = cellsviewmodel[indexPath.row]
-                cell.configure(with: viewModel)
-            }
+            let viewModel = cellsviewmodel[indexPath.row]
+            cell.configure(with: viewModel)
+        }
         
         
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionFooter else {
-             fatalError("error124555")
+            fatalError("error124555")
         }
         guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: RMFooterLoadingCollectionReusableView.identifier, for: indexPath) as? RMFooterLoadingCollectionReusableView else {
             fatalError("error")
@@ -148,7 +148,7 @@ extension RMEpisodeListViewViewModel :  UICollectionViewDataSource,UICollectionV
         let episode = episodes[indexPath.row]
         delegate?.didselectepisode(episode)
     }
-   
+    
 }
 extension RMEpisodeListViewViewModel : UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
