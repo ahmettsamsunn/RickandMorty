@@ -11,6 +11,7 @@ protocol RMLocationViewViewModelDelegate : AnyObject {
 }
 final class RMLocationViewViewModel {
     weak var delegate : RMLocationViewViewModelDelegate?
+    
     private var locations :[RMLocation] = [] {
         didSet {
             for location in locations {
@@ -22,11 +23,60 @@ final class RMLocationViewViewModel {
         }
     }
     
+    
     private var apiInfo : RMGetAllLocationsResponse.Info?
+    
     public private(set) var cellViewModels : [RMLocationTableViewCellViewModel] = []
-    init(){
-        
+    public var shouldShowLoadMoreIndicator: Bool {
+        return apiInfo?.next != nil
     }
+    public var isloadingmore = false
+    private var didFinishPagination : (()  -> Void)?
+    
+    init(){ }
+    public func registerDidFinishingPagination(_ block: @escaping () -> Void){
+        self.didFinishPagination = block
+    }
+  
+    public func fetchAdditionalLocations(){
+        
+        guard !isloadingmore else {
+            return
+        }
+        guard let nexurlstring = apiInfo?.next,
+              let url = URL(string:nexurlstring) else {
+            return
+        }
+        isloadingmore = true
+       
+        guard let request = RMRequest(url: url) else {
+            isloadingmore = false
+            print("failed to fln")
+            return
+        }
+        RMService.shared.execute(request, expecting: RMGetAllLocationsResponse.self) {[weak self] result in
+            switch result {
+            case .success(let responsemodel):
+                let Moreresults = responsemodel.results
+                let info = responsemodel.info
+          
+                self?.apiInfo = info
+                self?.cellViewModels.append(contentsOf: Moreresults.compactMap({
+                    return RMLocationTableViewCellViewModel(location: $0)
+                }))
+                DispatchQueue.main.async {
+                    self?.isloadingmore = false
+                    self?.didFinishPagination?()
+                }
+                
+            case .failure(let failure):
+                print(String(describing: failure))
+                self?.isloadingmore = false
+            }
+        }
+    }
+   
+    
     public func location(at index : Int) -> RMLocation? {
         guard index < locations.count,index >= 0 else {
             return nil
@@ -43,8 +93,8 @@ final class RMLocationViewViewModel {
                 DispatchQueue.main.async {
                     self?.delegate?.didFetchInitialLocations()
                 }
-            case .failure(let failure):
-                print("başarısız")
+            case .failure(_): break
+                break
             }
         }
     }

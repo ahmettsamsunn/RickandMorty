@@ -12,7 +12,7 @@ protocol RMEpisodeDetailViewDelegate : AnyObject {
 class RMEpisodeDetailView: UIView {
     
     public weak var delegate : RMEpisodeDetailViewDelegate?
-    
+
     private var collectionView : UICollectionView!
     private let spinnder : UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView()
@@ -37,6 +37,7 @@ class RMEpisodeDetailView: UIView {
         self.collectionView = createCollectionView()
         addSubview(collectionView)
         addSubview(spinnder)
+        
         addconstraints()
         spinnder.startAnimating()
     }
@@ -64,10 +65,7 @@ class RMEpisodeDetailView: UIView {
             collectionView.topAnchor.constraint(equalTo: topAnchor),
             collectionView.leftAnchor.constraint(equalTo: leftAnchor),
             collectionView.rightAnchor.constraint(equalTo: rightAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: bottomAnchor)
-            
-            
-        
+            collectionView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
     }
     private func createCollectionView() -> UICollectionView {

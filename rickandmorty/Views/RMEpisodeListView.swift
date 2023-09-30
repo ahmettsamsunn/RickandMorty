@@ -19,6 +19,7 @@ class RMEpisodeListView: UIView {
         spinner.translatesAutoresizingMaskIntoConstraints = false
         return spinner
     }()
+ 
     private let collectionview : UICollectionView = {
        let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -40,6 +41,7 @@ class RMEpisodeListView: UIView {
         super.init(frame: frame)
         translatesAutoresizingMaskIntoConstraints = false
         addSubview(collectionview)
+        
         addSubview(spinner)
         addConstraints()
         spinner.startAnimating()
@@ -62,6 +64,7 @@ class RMEpisodeListView: UIView {
             collectionview.bottomAnchor.constraint(equalTo: bottomAnchor),
             collectionview.leadingAnchor.constraint(equalTo: leadingAnchor),
             collectionview.trailingAnchor.constraint(equalTo: trailingAnchor),
+            
         ])
     }
     private func setUpCollectionView(){
@@ -69,14 +72,6 @@ class RMEpisodeListView: UIView {
         collectionview.delegate = viewModel
        
     }
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
-
 }
 extension RMEpisodeListView : RMEpisodeListViewViewModelDelegate {
     func didloadmoreepisodes(with newIndexPath: [IndexPath]) {

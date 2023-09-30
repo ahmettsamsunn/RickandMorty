@@ -14,6 +14,7 @@ class RMEpisodeDetailViewController: UIViewController,RMEpisodeDetailViewViewMod
     
     private let viewmodel : RMEpisodeDetailViewViewModel
     private let detailview  = RMEpisodeDetailView()
+
     
     init(url : URL?){
         self.viewmodel = RMEpisodeDetailViewViewModel(endpointURL: url)
@@ -29,6 +30,7 @@ class RMEpisodeDetailViewController: UIViewController,RMEpisodeDetailViewViewMod
         super.viewDidLoad()
         title = "Episode"
         view.addSubview(detailview)
+        
         addconstarints()
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didTapShare))
         viewmodel.delegate = self
@@ -43,7 +45,8 @@ class RMEpisodeDetailViewController: UIViewController,RMEpisodeDetailViewViewMod
             detailview.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             detailview.leftAnchor.constraint(equalTo: view.leftAnchor),
             detailview.rightAnchor.constraint(equalTo: view.rightAnchor),
-            detailview.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            detailview.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
             
         ])
     }

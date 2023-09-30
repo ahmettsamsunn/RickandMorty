@@ -14,8 +14,7 @@ let charactersListView = CharactersListView()
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Characters"
-   
+       title = "Characters"
         setupView()
        addsearchbutton()
         
@@ -50,14 +49,6 @@ let charactersListView = CharactersListView()
         navigationController?.pushViewController(detailVC, animated: true)
     }
 
-    /*
-    // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

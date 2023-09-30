@@ -12,17 +12,26 @@ protocol RMLocationViewDelegate : AnyObject {
 class RMLocationView: UIView {
    public weak var delegate : RMLocationViewDelegate?
     
-    private var viewmodel  : RMLocationViewViewModel?{
+ 
+    private var viewModel  : RMLocationViewViewModel? {
         didSet {
             spinner.stopAnimating()
             tableView.isHidden = false
             tableView.reloadData()
-            print(viewmodel?.cellViewModels[3].name ?? "zahaha")
+          
             UIView.animate(withDuration: 0.3) {
                 self.tableView.alpha = 1
             }
+            viewModel?.registerDidFinishingPagination { [weak self] in
+                DispatchQueue.main.async {
+                    self?.tableView.tableFooterView = nil
+                    self?.tableView.reloadData()
+                }
+                
+            }
         }
     }
+    
     private let tableView : UITableView = {
         let table = UITableView(frame: .zero, style: .grouped)
         table.translatesAutoresizingMaskIntoConstraints = false
@@ -47,12 +56,14 @@ class RMLocationView: UIView {
         spinner.startAnimating()
         addconstraints()
         configuretable()
-        print(viewmodel?.cellViewModels.count ?? "123")
+      
+       
         
     }
     private func configuretable(){
         tableView.delegate = self
         tableView.dataSource = self
+        
     }
     
     required init?(coder: NSCoder) {
@@ -79,14 +90,14 @@ class RMLocationView: UIView {
     }
     */
     public func configure(with viewModel :  RMLocationViewViewModel){
-        self.viewmodel = viewModel
+        self.viewModel = viewModel
             
     }
 }
 extension RMLocationView : UITableViewDelegate {
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard let viewModel = viewmodel?.location(at: indexPath.row) else { return  }
+        guard let viewModel = viewModel?.location(at: indexPath.row) else { return  }
         delegate?.rmLocationView(self, didSelect: viewModel)
     }
     
@@ -99,12 +110,12 @@ extension RMLocationView : UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return viewmodel?.cellViewModels.count ?? 0
+        return viewModel?.cellViewModels.count ?? 0
         
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cellviewModels = viewmodel?.cellViewModels else {
+        guard let cellviewModels = viewModel?.cellViewModels else {
             fatalError()
         }
       guard  let cell = tableView.dequeueReusableCell(withIdentifier: RMLocationTableViewCell.cellidentifier, for: indexPath) as? RMLocationTableViewCell else {
@@ -119,4 +130,32 @@ extension RMLocationView : UITableViewDataSource {
     }
     
     
+}
+extension RMLocationView : UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        guard let viewmodel = viewModel,!viewmodel.cellViewModels.isEmpty,
+              viewmodel.shouldShowLoadMoreIndicator, !viewmodel.isloadingmore
+        else {
+            return
+        }
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) {[weak self] t in
+            let offset = scrollView.contentOffset.y
+            let totalContentHeight = scrollView.contentSize.height
+            let totalScrollViewFixedHeight = scrollView.frame.size.height
+            if offset >= (totalContentHeight - totalScrollViewFixedHeight ){
+                DispatchQueue.main.async {
+                    self?.showLoadingIndicator()
+                }
+                viewmodel.fetchAdditionalLocations()
+              
+            }
+            t.invalidate()
+        }
+    }
+
+    private func showLoadingIndicator(){
+        let footer = RMTableLoadingFooterView(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: 100))
+        tableView.tableFooterView = footer
+    }
 }

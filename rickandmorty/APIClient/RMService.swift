@@ -18,7 +18,6 @@ final class RMService{
             do {
                 let result = try  JSONDecoder().decode(type.self, from: cachedData)
                 completion(.success(result))
-               
             }
             catch {
                 completion(.failure(error))
